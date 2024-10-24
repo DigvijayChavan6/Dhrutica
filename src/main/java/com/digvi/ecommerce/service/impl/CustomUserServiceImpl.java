@@ -30,12 +30,12 @@ public class CustomUserServiceImpl implements UserDetailsService {
             String actualUsername = username.substring(SELLER_PREFIX.length());
             Seller seller = sellerRepository.findByEmail(actualUsername);
             if(seller != null){
-                return buildUserDetails(seller.getEmail(), seller.getPassword(), seller.getRole());
+                return this.buildUserDetails(seller.getEmail(), seller.getPassword(), seller.getRole());
             }
         }else{
             User user = userRepository.findByEmail(username);
             if(user != null){
-                return buildUserDetails(user.getEmail(), user.getPassword(), user.getRole());
+                return this.buildUserDetails(user.getEmail(), user.getPassword(), user.getRole());
             }
         }
         throw new UsernameNotFoundException("user or seller not found with this email "+username);

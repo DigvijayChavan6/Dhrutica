@@ -3,6 +3,7 @@ package com.digvi.ecommerce.service.impl;
 import com.digvi.ecommerce.config.JwtProvider;
 import com.digvi.ecommerce.domain.AccountStatus;
 import com.digvi.ecommerce.domain.USER_ROLE;
+import com.digvi.ecommerce.exceptions.SellerException;
 import com.digvi.ecommerce.model.Address;
 import com.digvi.ecommerce.model.Seller;
 import com.digvi.ecommerce.repository.AddressRepository;
@@ -26,7 +27,7 @@ public class SellerServiceImpl implements com.digvi.ecommerce.service.SellerServ
     public Seller createSeller(Seller seller) throws Exception {
         Seller sellerExist = sellerRepository.findByEmail(seller.getEmail());
         if(sellerExist != null){
-            throw new Exception("Seller already exists, use another email");
+            throw new Exception("Seller already exists, go to login");
         }
 
         Address savedAddress = addressRepository.save(seller.getPickupAddress());
@@ -37,7 +38,7 @@ public class SellerServiceImpl implements com.digvi.ecommerce.service.SellerServ
         newSeller.setSellerName(seller.getSellerName());
         newSeller.setMobile(seller.getMobile());
         newSeller.setGSTIN(seller.getGSTIN());
-        newSeller.setPickupAddress(seller.getPickupAddress());
+        newSeller.setPickupAddress(savedAddress);
         newSeller.setRole(USER_ROLE.ROLE_SELLER);
         newSeller.setBankDetails(seller.getBankDetails());
         newSeller.setBusinessDetails(seller.getBusinessDetails());
@@ -53,8 +54,8 @@ public class SellerServiceImpl implements com.digvi.ecommerce.service.SellerServ
     }
 
     @Override
-    public Seller getSellerById(Long id) throws Exception {
-        return sellerRepository.findById(id).orElseThrow(() -> new Exception("Seller not found with this id "+id));
+    public Seller getSellerById(Long id) throws SellerException {
+        return sellerRepository.findById(id).orElseThrow(() -> new SellerException("Seller not found with this id "+id));
     }
 
     @Override
@@ -128,14 +129,13 @@ public class SellerServiceImpl implements com.digvi.ecommerce.service.SellerServ
     public Seller verifyEmail(String email, String otp) throws Exception {
         Seller seller = getSellerByEmail(email);
         seller.setEmailVerified(true);
-        this.updateSellerAccountStatus(seller.getId(), AccountStatus.ACTIVE);
-        return sellerRepository.save(seller);
+        return this.updateSellerAccountStatus(seller.getId(), AccountStatus.ACTIVE);
     }
 
     @Override
-    public Seller updateSellerAccountStatus(Long sellerId, AccountStatus acStatus) throws Exception {
+    public Seller updateSellerAccountStatus(Long sellerId, AccountStatus accountStatus) throws Exception {
         Seller seller = getSellerById(sellerId);
-        seller.setAccountStatus(acStatus);
+        seller.setAccountStatus(accountStatus);
         return sellerRepository.save(seller);
     }
 }

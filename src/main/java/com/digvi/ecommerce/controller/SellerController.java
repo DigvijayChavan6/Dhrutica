@@ -1,6 +1,7 @@
 package com.digvi.ecommerce.controller;
 
 import com.digvi.ecommerce.domain.AccountStatus;
+import com.digvi.ecommerce.exceptions.SellerException;
 import com.digvi.ecommerce.model.Seller;
 import com.digvi.ecommerce.model.VerificationCode;
 import com.digvi.ecommerce.repository.VerificationCodeRepository;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/s")
+@RequestMapping("/sellers")
 public class SellerController {
 
     private final SellerService sellerService;
@@ -29,12 +30,8 @@ public class SellerController {
     //private final SellerReportService sellerReportService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> loginSeller(@RequestBody LoginRequest req) throws Exception {
-        String otp = req.getOtp();
-        String email = req.getEmail();
-
-
-        req.setEmail("seller_"+email);
+    public ResponseEntity<AuthResponse> loginSeller(@RequestBody LoginRequest req) {
+        req.setEmail("seller_"+req.getEmail());
         AuthResponse authResponse = authService.signing(req);
 
         return ResponseEntity.ok(authResponse);
@@ -66,14 +63,14 @@ public class SellerController {
 
         String subject = "Seller email verification code";
         String text = "Welcome to our vegetables platform. \n";
-        String frontend_url = "http://localhost:3000/verify-seller/";
-        emailService.sendVerificationOtpEmail(seller.getEmail(), verificationCode.getOtp(), subject, text+frontend_url+"\n Otp is "+otp);
+        String frontend_url = "http://localhost:5454/verify/";
+        emailService.sendVerificationOtpEmail(seller.getEmail(), verificationCode.getOtp(), subject, text+frontend_url);
 
         return new ResponseEntity<>(savedSeller, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Seller> getSellerById(@PathVariable Long id) throws Exception {
+    public ResponseEntity<Seller> getSellerById(@PathVariable Long id) throws SellerException {
         Seller seller = sellerService.getSellerById(id);
         return new ResponseEntity<>(seller, HttpStatus.OK);
     }

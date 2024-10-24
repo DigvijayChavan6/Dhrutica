@@ -12,7 +12,7 @@ import com.digvi.ecommerce.repository.UserRepository;
 import com.digvi.ecommerce.repository.VerificationCodeRepository;
 import com.digvi.ecommerce.request.LoginRequest;
 import com.digvi.ecommerce.response.AuthResponse;
-import com.digvi.ecommerce.response.SignupRequest;
+import com.digvi.ecommerce.request.SignupRequest;
 import com.digvi.ecommerce.service.AuthService;
 import com.digvi.ecommerce.service.EmailService;
 import com.digvi.ecommerce.utils.OtpUtil;
@@ -24,7 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,27 +43,27 @@ public class AuthServiceImpl implements AuthService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final EmailService emailService;
     private final CustomUserServiceImpl customUserService;
-
+    private static final String SELLER_PREFIX = "seller_";
     @Override
-    public void sentLoginOtp(String email, USER_ROLE role) throws Exception {
+    public void sentSignUpLoginOtp(String email, USER_ROLE role) throws Exception {
         String SIGNING_PREFIX = "signing_";
 
         if(email.startsWith(SIGNING_PREFIX)){
             email=email.substring(SIGNING_PREFIX.length());
 
-            if(role.equals(USER_ROLE.ROLE_CUSTOMER)){
-                User user=userRepository.findByEmail(email);
-                if(user == null){
-                    throw new Exception("user is not exists...");
-                }
-            }else {
+            if(role.equals(USER_ROLE.ROLE_SELLER)){
                 Seller seller=sellerRepository.findByEmail(email);
                 if(seller == null){
                     throw new Exception("seller is not exists...");
                 }
+            }else {
+                User user=userRepository.findByEmail(email);
+                if(user == null){
+                    throw new Exception("user is not exists...");
+                }
             }
         }
-
+        // else { user is exists so why signup }
         VerificationCode isExist=verificationCodeRepository.findByEmail(email);
         if(isExist != null){
             verificationCodeRepository.delete(isExist);
@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
         verificationCodeRepository.save(verificationCode);
 
         String subject = "Signup/Login OTP Verification";
-        String text = "Dear user,\nPlease use the following OTP to complete your signup or login process.\n"+otp;
+        String text = "Dear user,\nPlease use the following OTP to complete your signup or login process.";
 
         emailService.sendVerificationOtpEmail(email, otp, subject, text);
     }
@@ -119,6 +119,8 @@ public class AuthServiceImpl implements AuthService {
         String username = req.getEmail();
         String otp = req.getOtp();
 
+        System.out.println(req);
+
         Authentication authentication = authenticate(username, otp);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token=jwtProvider.generateToken(authentication);
@@ -136,8 +138,12 @@ public class AuthServiceImpl implements AuthService {
 
     private Authentication authenticate(String username, String otp) {
         UserDetails userDetails=customUserService.loadUserByUsername(username);
+        if(username.startsWith(SELLER_PREFIX)){
+            username = username.substring(SELLER_PREFIX.length());
+        }
         VerificationCode verificationCode=verificationCodeRepository.findByEmail(username);
-
+        System.out.println(userDetails +"\n"+
+                username+"\n"+verificationCode+"\n"+otp);
         if(userDetails == null || verificationCode == null || !verificationCode.getOtp().equals(otp)){
             throw new BadCredentialsException("Invalid username or otp...");
         }

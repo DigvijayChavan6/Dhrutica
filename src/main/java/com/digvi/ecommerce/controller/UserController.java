@@ -1,14 +1,10 @@
 package com.digvi.ecommerce.controller;
 
-import com.digvi.ecommerce.domain.USER_ROLE;
 import com.digvi.ecommerce.model.User;
-import com.digvi.ecommerce.response.AuthResponse;
-import com.digvi.ecommerce.response.SignupRequest;
 import com.digvi.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 

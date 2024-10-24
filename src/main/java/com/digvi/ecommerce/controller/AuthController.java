@@ -1,14 +1,12 @@
 package com.digvi.ecommerce.controller;
 
 import com.digvi.ecommerce.domain.USER_ROLE;
-import com.digvi.ecommerce.model.User;
-import com.digvi.ecommerce.model.VerificationCode;
 import com.digvi.ecommerce.repository.UserRepository;
 import com.digvi.ecommerce.request.LoginOtpRequest;
 import com.digvi.ecommerce.request.LoginRequest;
 import com.digvi.ecommerce.response.ApiResponse;
 import com.digvi.ecommerce.response.AuthResponse;
-import com.digvi.ecommerce.response.SignupRequest;
+import com.digvi.ecommerce.request.SignupRequest;
 import com.digvi.ecommerce.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +37,7 @@ public class AuthController {
 
     @PostMapping("/sent/login-signup-otp")
     public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody LoginOtpRequest req) throws Exception {
-        authService.sentLoginOtp(req.getEmail(), req.getRole());
+        authService.sentSignUpLoginOtp(req.getEmail(), req.getRole());
         ApiResponse apiResponse = new ApiResponse();
 
         apiResponse.setMessage("otp sent successfully");
@@ -49,6 +47,7 @@ public class AuthController {
 
     @PostMapping("/signing")
     public ResponseEntity<AuthResponse> loginHandler(@RequestBody LoginRequest req) throws Exception {
+
         AuthResponse authResponse = authService.signing(req);
 
         return ResponseEntity.ok(authResponse);
