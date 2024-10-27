@@ -27,7 +27,7 @@ public class ProductController {
 
     }
 
-    @etMapping("/search")
+    @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProduct(@RequestParam(required = false) String query){
         List<Product> products = productService.searchProducts(query);
         return new ResponseEntity<>(products, HttpStatus.OK);
@@ -46,7 +46,6 @@ public class ProductController {
             @RequestParam(required = false) String stock,
             @RequestParam(defaultValue = "0") Integer pageNumber
     ){
-        //System.out.println("color p ----------- "+pageNumber);
         return new ResponseEntity<>(productService.getAllProducts(category, brand,
                 color, size, minPrice, maxPrice, minDiscount, sort,
                 stock, pageNumber), HttpStatus.OK);
