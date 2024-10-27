@@ -27,7 +27,7 @@ public class ProductController {
 
     }
 
-    @GetMapping("/search")
+    @etMapping("/search")
     public ResponseEntity<List<Product>> searchProduct(@RequestParam(required = false) String query){
         List<Product> products = productService.searchProducts(query);
         return new ResponseEntity<>(products, HttpStatus.OK);
