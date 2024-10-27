@@ -46,6 +46,7 @@ public class ProductController {
             @RequestParam(required = false) String stock,
             @RequestParam(defaultValue = "0") Integer pageNumber
     ){
+        //System.out.println("color p ----------- "+pageNumber);
         return new ResponseEntity<>(productService.getAllProducts(category, brand,
                 color, size, minPrice, maxPrice, minDiscount, sort,
                 stock, pageNumber), HttpStatus.OK);
