@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/sellers/product")
+@RequestMapping("/api/sellers/products")
 public class SellerProductController {
 
     private final ProductService productService;
@@ -36,7 +36,6 @@ public class SellerProductController {
             @RequestBody CreateProductRequest request,
             @RequestHeader("Authorization") String jwt)throws Exception {
         Seller seller = sellerService.getSellerProfile(jwt);
-
         Product product = productService.createProduct(request, seller);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }

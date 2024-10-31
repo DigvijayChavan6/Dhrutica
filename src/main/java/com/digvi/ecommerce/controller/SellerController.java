@@ -3,12 +3,14 @@ package com.digvi.ecommerce.controller;
 import com.digvi.ecommerce.domain.AccountStatus;
 import com.digvi.ecommerce.exceptions.SellerException;
 import com.digvi.ecommerce.model.Seller;
+import com.digvi.ecommerce.model.SellerReport;
 import com.digvi.ecommerce.model.VerificationCode;
 import com.digvi.ecommerce.repository.VerificationCodeRepository;
 import com.digvi.ecommerce.request.LoginRequest;
 import com.digvi.ecommerce.response.AuthResponse;
 import com.digvi.ecommerce.service.AuthService;
 import com.digvi.ecommerce.service.EmailService;
+import com.digvi.ecommerce.service.SellerReportService;
 import com.digvi.ecommerce.service.SellerService;
 import com.digvi.ecommerce.utils.OtpUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class SellerController {
     private final VerificationCodeRepository verificationCodeRepository;
     private final AuthService authService;
     private final EmailService emailService;
-    //private final SellerReportService sellerReportService;
+    private final SellerReportService sellerReportService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginSeller(@RequestBody LoginRequest req) {
@@ -81,13 +83,12 @@ public class SellerController {
         return new ResponseEntity<>(seller, HttpStatus.OK);
     }
 
-//    @GetMapping("/report")
-//    public ResponseEntity<SellerReport> getSellerReport(@RequestHeader("Authorization") String jwt) throws Exception {
-//        String email = jwtProvider.getEmailFromJwtToken(jwt);
-//        Seller seller = sellerService.getSellerByEmail(email);
-//        SellerReport report = sellerReportService.getSellerReport(seller);
-//        return new ResponseEntity<>(report, HttpStatus.OK);
-//    }
+    @GetMapping("/report")
+    public ResponseEntity<SellerReport> getSellerReport(@RequestHeader("Authorization") String jwt) throws Exception {
+        Seller seller = sellerService.getSellerProfile(jwt);
+        SellerReport report = sellerReportService.getSellerReport(seller);
+        return new ResponseEntity<>(report, HttpStatus.OK);
+    }
 
     @GetMapping
     public ResponseEntity<List<Seller>> getAllSellers(

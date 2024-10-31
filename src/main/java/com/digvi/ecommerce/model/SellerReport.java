@@ -17,20 +17,20 @@ public class SellerReport {
     @OneToOne
     private Seller seller;
 
-    private Long totalEarnings = 0L;
+    private Double totalEarnings = 0.0D;
 
-    private Long totalSales = 0L;
+    private Double totalSales = 0.0D;
 
-    private Long totalRefunds = 0L;
+    private Double totalRefunds = 0.0D;
 
-    private Long totalTax = 0L;
+    private Double totalTax = 0.0D;
 
-    private Long netEarnings = 0L;
+    private Double netEarnings = 0.0;
 
     private Integer totalOrders = 0;
 
     private Integer canceledOrders = 0;
 
-    private Integer totalTransactions = 0;
+    private Double totalTransactions = 0.0D;
 
 }

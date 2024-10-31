@@ -20,6 +20,8 @@ public class PaymentOrder {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private Double amount;
+
     private PaymentOrderStatus status = PaymentOrderStatus.PENDING;
 
     private PaymentMethod paymentMethod;
@@ -29,6 +31,6 @@ public class PaymentOrder {
     @ManyToOne
     private User user;
 
-    @ManyToMany
+    @OneToMany
     private Set<Order> orders = new HashSet<>();
 }
